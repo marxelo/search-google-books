@@ -34,10 +34,11 @@ class BooksResponse {
   });
 
   factory BooksResponse.fromJson(Map<String, dynamic> json) {
+    
     return BooksResponse(
       totalItems: json['totalItems'],
-      items:
-          (json['items'] as List).map((item) => Book.fromJson(item)).toList(),
+      items: json.containsKey('items') ? 
+          (json['items'] as List).map((item) => Book.fromJson(item)).toList() : [],
     );
   }
 }
