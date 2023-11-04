@@ -8,7 +8,7 @@ const kFormPickImageIconSize = 28.0;
 const kFormBoxSizedHeight = 20.0;
 const kDetailsImageSize = 250.0;
 const kDetailsTextStyle = TextStyle(
-    color: Colors.black87,
+    // color: Colors.black87,
     fontSize: 18,
     overflow: TextOverflow.clip,
     fontWeight: FontWeight.normal);

@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 const String baseUrl =
     'https://www.googleapis.com/books/v1/volumes?q=+intitle:';
 const String urlSuffix =
-    '&maxResults=20&langRestrict=pt-BR&fields=totalItems,items/id,items/volumeInfo(title,authors,description,pageCount,imageLinks)';
+    '&maxResults=20&langRestrict=pt-BR&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks)';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          if (response.body.isNotEmpty ) {
+          if (response.body.isNotEmpty) {
             final bResponse = BooksResponse.fromJson(jsonDecode(response.body));
             books.addAll(bResponse.items);
           }
@@ -178,25 +178,81 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     },
                     child: ListTile(
-                      // visualDensity: VisualDensity.comfortable,
-                      leading: Image.network(
-                          books[index].volumeInfo.imageLinks.thumbnail),
-                      title: SizedBox(
-                        // height: 80,
+                      title: Card(
+                        margin: const EdgeInsets.fromLTRB(0.0, 2.0, 0.0, 2.0),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Text(
-                            books[index].volumeInfo.title, // aki
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w200,
+                          padding: const EdgeInsets.all(4.0),
+                          child: Container(
+                            constraints: const BoxConstraints(
+                                minHeight: 100,
+                                minWidth: 320,
+                                maxWidth: double.infinity,
+                                maxHeight: double.infinity),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 70,
+                                  child: Image.network(books[index]
+                                      .volumeInfo
+                                      .imageLinks
+                                      .thumbnail),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          books[index].volumeInfo.title,
+                                          textAlign: TextAlign.left,
+                                          overflow: TextOverflow.clip,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w200,
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          books[index]
+                                                      .volumeInfo
+                                                      .authors
+                                                      .length >
+                                                  1
+                                              ? '${books[index].volumeInfo.authors[0]} e outro(s) '
+                                              : books[index]
+                                                  .volumeInfo
+                                                  .authors[0],
+                                          overflow: TextOverflow.clip,
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          books[index].volumeInfo.publishedDate,
+                                          overflow: TextOverflow.clip,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Center(
+                                  heightFactor: 3.0,
+                                  child: Icon(
+                                    Icons.chevron_right,
+                                    size: 30,
+                                  ),
+                                )
+                              ],
                             ),
                           ),
                         ),
                       ),
-                      subtitle: Text(books[index].volumeInfo.authors.length > 1
-                          ? '${books[index].volumeInfo.authors[0]} e outro(s) '
-                          : books[index].volumeInfo.authors[0]), //aki
                     ),
                   );
                 }

@@ -34,11 +34,11 @@ class BooksResponse {
   });
 
   factory BooksResponse.fromJson(Map<String, dynamic> json) {
-    
     return BooksResponse(
       totalItems: json['totalItems'],
-      items: json.containsKey('items') ? 
-          (json['items'] as List).map((item) => Book.fromJson(item)).toList() : [],
+      items: json.containsKey('items')
+          ? (json['items'] as List).map((item) => Book.fromJson(item)).toList()
+          : [],
     );
   }
 }
@@ -66,14 +66,15 @@ class VolumeInfo {
   final String description;
   final int pageCount;
   final ImageLinks imageLinks;
+  final String publishedDate;
 
-  VolumeInfo({
-    required this.title,
-    required this.authors,
-    required this.description,
-    required this.pageCount,
-    required this.imageLinks,
-  });
+  VolumeInfo(
+      {required this.title,
+      required this.authors,
+      required this.description,
+      required this.pageCount,
+      required this.imageLinks,
+      required this.publishedDate});
 
   factory VolumeInfo.fromJson(Map<String, dynamic> json) {
     return VolumeInfo(
@@ -83,6 +84,7 @@ class VolumeInfo {
           : ['Não disponível'],
       description: json['description'] ?? 'Não disponível',
       pageCount: json['pageCount'] ?? 0,
+      publishedDate: json['publishedDate'] ?? 'Sem data de Publicação',
       imageLinks: json.containsKey('imageLinks')
           ? ImageLinks.fromJson(json['imageLinks'])
           : ImageLinks(

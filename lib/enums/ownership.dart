@@ -1,0 +1,4 @@
+enum Ownership {
+  notOwned,
+  owned,
+}
