@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 const String baseUrl =
     'https://www.googleapis.com/books/v1/volumes?q=+intitle:';
 const String urlSuffix =
-    '&maxResults=20&langRestrict=pt-BR&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks)';
+    '&maxResults=20&langRestrict=pt&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks)';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -46,9 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       String fullUrl =
           '$baseUrl${s.query}&startIndex=${s.startIndex.toString()}$urlSuffix';
+      print('fullurl: $fullUrl');
 
       Uri uri = Uri.parse(fullUrl);
 
+      print('uri: ${uri.toString()}');
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
@@ -98,15 +100,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void showBottomSheet() async {
     showModalBottomSheet(
+      // backgroundColor: Colors.grey,
       elevation: 5,
+      shape: const ContinuousRectangleBorder(
+        borderRadius: BorderRadiusDirectional.zero,
+      ),
       isScrollControlled: true,
       context: context,
       builder: (_) => Container(
         padding: EdgeInsets.only(
-          top: 30,
+          top: 20,
           left: 15,
           right: 15,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 50,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -114,46 +120,46 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             TextFormField(
               controller: _searchController,
-              textInputAction: TextInputAction.go,
+              autofocus: true,
+              textInputAction: TextInputAction.search,
+              onEditingComplete: () async {
+                if (_searchController.text.isNotEmpty) {
+                  search.query = _searchController.text;
+                  search.startIndex = 0;
+                  books = [];
+                  _fetchData(search);
+                }
+
+                _searchController.text = "";
+
+                Navigator.of(context).pop();
+              },
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: "Palavra contida no título",
               ),
             ),
-            const SizedBox(height: 25),
-            Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (_searchController.text.isNotEmpty) {
-                    search.query = _searchController.text;
-                    search.startIndex = 0;
-                    books = [];
-                    _fetchData(search);
-                  }
-
-                  _searchController.text = "";
-
-                  Navigator.of(context).pop();
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(18),
-                  child: Text(
-                    "Pesquisar",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
-                ),
-              ),
-            )
           ],
         ),
       ),
     );
   }
 
+  String _handleAuthorsName(List<String> authors) {
+    if (authors.isEmpty) {
+      return 'Autor não disponível';
+    } else if (authors.length == 1) {
+      return authors.first;
+    } else if (authors.length == 2) {
+      return '${authors[0]} e ${authors[1]}';
+    }
+    return '${authors.first} e outros';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFECEAF4),
+      // backgroundColor: const Color(0xFFECEAF4),
       appBar: AppBar(
         title: const Text("gBooks"),
       ),
@@ -179,6 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     child: ListTile(
                       title: Card(
+                        surfaceTintColor: Theme.of(context).colorScheme.background,
                         margin: const EdgeInsets.fromLTRB(0.0, 2.0, 0.0, 2.0),
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
@@ -219,15 +226,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Align(
                                         alignment: Alignment.topLeft,
                                         child: Text(
-                                          books[index]
-                                                      .volumeInfo
-                                                      .authors
-                                                      .length >
-                                                  1
-                                              ? '${books[index].volumeInfo.authors[0]} e outro(s) '
-                                              : books[index]
-                                                  .volumeInfo
-                                                  .authors[0],
+                                          _handleAuthorsName(
+                                              books[index].volumeInfo.authors),
                                           overflow: TextOverflow.clip,
                                         ),
                                       ),

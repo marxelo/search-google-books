@@ -81,7 +81,7 @@ class VolumeInfo {
       title: json['title'] ?? 0,
       authors: json.containsKey('authors')
           ? (json['authors'] as List).map((author) => author as String).toList()
-          : ['Não disponível'],
+          : ['Autor não disponível'],
       description: json['description'] ?? 'Não disponível',
       pageCount: json['pageCount'] ?? 0,
       publishedDate: json['publishedDate'] ?? 'Sem data de Publicação',

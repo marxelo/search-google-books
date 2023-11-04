@@ -215,14 +215,14 @@ class _BookDetailState extends State<BookDetail> {
                     minWidth: 300,
                     maxWidth: double.infinity,
                     maxHeight: double.infinity),
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(76, 199, 198, 198),
-                  borderRadius: BorderRadius.all(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  borderRadius: const BorderRadius.all(
                     Radius.circular(20),
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
