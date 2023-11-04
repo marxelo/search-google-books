@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gbooks/components/standard_cover_widget.dart';
 import 'package:gbooks/models/search.dart';
 import 'package:gbooks/pages/book_details.dart';
 import 'package:gbooks/services/gbooks_service.dart';
+import 'package:gbooks/utils/tools.dart';
 import 'package:http/http.dart' as http;
 
 const String baseUrl =
@@ -33,8 +35,11 @@ class _MyHomePageState extends State<MyHomePage> {
   String _error = '';
 
   final googleBooksClient = GoogleBooksClient();
+  final int _numberOfBooksPerRequest = 20;
+  bool _finalPage = false;
 
   bool _isLoading = false;
+  bool _toastMessageSent = false;
 
   Future<void> _fetchData(Search s) async {
     setState(() {
@@ -58,14 +63,26 @@ class _MyHomePageState extends State<MyHomePage> {
           if (response.body.isNotEmpty) {
             final bResponse = BooksResponse.fromJson(jsonDecode(response.body));
             books.addAll(bResponse.items);
+
+            if (bResponse.items.length < _numberOfBooksPerRequest) {
+              _finalPage = true;
+            }
+            if (bResponse.items.isEmpty) {
+              _showSnackBar(context, 'Não encontrado');
+            }
+          } else {
+            _finalPage = true;
+            _showSnackBar(context, 'Não encontrado');
           }
           _isLoading = false;
           _error = '';
         });
       } else {
+
         throw Exception('Failed to load data');
       }
     } on Exception catch (e) {
+
       setState(() {
         _isLoading = false;
 
@@ -89,13 +106,31 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _loadMore() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      _currentPage++;
-      search.startIndex = _currentPage;
+    if (_finalPage) {
+      if (!_toastMessageSent) {
+        _toastMessageSent = true;
+        _showSnackBar(
+            context, 'Não encontrados mais livros com estes critérios');
+      }
+    } else {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _currentPage++;
+        search.startIndex = _currentPage;
 
-      _fetchData(search);
+        _fetchData(search);
+      }
     }
+  }
+
+  Future<void> _showSnackBar(BuildContext context, String message) async {
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
   }
 
   void showBottomSheet() async {
@@ -127,6 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   search.query = _searchController.text;
                   search.startIndex = 0;
                   books = [];
+                  _finalPage = false;
+                  _toastMessageSent = false;
                   _fetchData(search);
                 }
 
@@ -145,16 +182,64 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  String _handleAuthorsName(List<String> authors) {
-    if (authors.isEmpty) {
-      return 'Autor não disponível';
-    } else if (authors.length == 1) {
-      return authors.first;
-    } else if (authors.length == 2) {
-      return '${authors[0]} e ${authors[1]}';
-    }
-    return '${authors.first} e outros';
-  }
+  // String _handleAuthorsName(List<String> authors) {
+  //   if (authors.isEmpty) {
+  //     return 'Autor não disponível';
+  //   } else if (authors.length == 1) {
+  //     return authors.first;
+  //   } else if (authors.length == 2) {
+  //     return '${authors[0]} e ${authors[1]}';
+  //   }
+  //   return '${authors.first} e outros';
+  // }
+
+  // Widget noCoverImageWidget(Book book) {
+  //   return ClipRRect(
+  //     child: Container(
+  //       height: 150,
+  //       width: 130,
+  //       padding: const EdgeInsets.all(16.0),
+  //       decoration: BoxDecoration(
+  //         border: Border.all(
+  //           color: Colors.black54,
+  //         ),
+  //       ),
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: [
+  //           Expanded(
+  //             child: Text(
+  //               book.volumeInfo.title.capitalize(),
+  //               textAlign: TextAlign.center,
+  //               overflow: TextOverflow.clip,
+
+  //               style: const TextStyle(
+  //                 fontWeight: FontWeight.bold,
+  //                 fontSize: 14,
+  //               ),
+  //             ),
+  //           ),
+  //           Text(
+  //             Tools.handleAuthorsName(book.volumeInfo.authors),
+  //             textAlign: TextAlign.center,
+  //             overflow: TextOverflow.clip,
+  //             style: const TextStyle(
+  //               fontWeight: FontWeight.normal,
+  //               fontSize: 12,
+  //             ),
+  //           ),
+  //           Text(
+  //             book.volumeInfo.publishedDate,
+  //             style: const TextStyle(
+  //               fontWeight: FontWeight.normal,
+  //               fontSize: 10,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -185,13 +270,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     child: ListTile(
                       title: Card(
-                        surfaceTintColor: Theme.of(context).colorScheme.background,
+                        surfaceTintColor:
+                            Theme.of(context).colorScheme.background,
                         margin: const EdgeInsets.fromLTRB(0.0, 2.0, 0.0, 2.0),
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: Container(
                             constraints: const BoxConstraints(
-                                minHeight: 100,
+                                minHeight: 150,
                                 minWidth: 320,
                                 maxWidth: double.infinity,
                                 maxHeight: double.infinity),
@@ -199,13 +285,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(
-                                  width: 70,
-                                  child: Image.network(books[index]
-                                      .volumeInfo
-                                      .imageLinks
-                                      .thumbnail),
-                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Column(
@@ -226,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Align(
                                         alignment: Alignment.topLeft,
                                         child: Text(
-                                          _handleAuthorsName(
+                                          Tools.handleAuthorsName(
                                               books[index].volumeInfo.authors),
                                           overflow: TextOverflow.clip,
                                         ),
@@ -241,13 +320,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ],
                                   ),
                                 ),
-                                const Center(
-                                  heightFactor: 3.0,
-                                  child: Icon(
-                                    Icons.chevron_right,
-                                    size: 30,
-                                  ),
-                                )
+                                books[index]
+                                        .volumeInfo
+                                        .imageLinks
+                                        .thumbnail
+                                        .trim()
+                                        .isEmpty
+                                    ? StandardCoverWidget(
+                                        book: books[index],
+                                      )
+                                    : ClipRRect(
+                                        // width: 70,
+                                        child: Image.network(books[index]
+                                            .volumeInfo
+                                            .imageLinks
+                                            .thumbnail),
+                                      ),
                               ],
                             ),
                           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gbooks/components/standard_cover_widget.dart';
 import 'package:gbooks/enums/ownership.dart';
 import 'package:gbooks/enums/read_status.dart';
 import 'package:gbooks/models/shelf.dart';
@@ -134,13 +135,21 @@ class _BookDetailState extends State<BookDetail> {
         child: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             Container(
-              height: 250,
+              height: 300,
               alignment: Alignment.center,
-              child: Image.network(
-                book.volumeInfo.imageLinks.thumbnail,
-                fit: BoxFit.fitHeight,
-                height: 250,
-              ),
+              child: book.volumeInfo.imageLinks.thumbnail.isEmpty
+                  ? StandardCoverWidget(
+                      book: book,
+                      height: 300,
+                      width: 220,
+                      fontSizeIncreaseBy: 5,
+                      authorTextOverflow: TextOverflow.clip,
+                    )
+                  : Image.network(
+                      book.volumeInfo.imageLinks.thumbnail,
+                      fit: BoxFit.fitHeight,
+                      height: 300,
+                    ),
             ),
             const SizedBox(
               height: 20,
@@ -184,7 +193,6 @@ class _BookDetailState extends State<BookDetail> {
                   ),
                   GestureDetector(
                     onTap: () {
-
                       if (bookFromShelf.readStatus == ReadStatus.read) {
                         bookFromShelf.readStatus = ReadStatus.notRead;
                       } else {

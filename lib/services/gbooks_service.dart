@@ -91,7 +91,7 @@ class VolumeInfo {
               smallThumbnail:
                   'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Imagem_n%C3%A3o_dispon%C3%ADvel.svg/240px-Imagem_n%C3%A3o_dispon%C3%ADvel.svg.png',
               thumbnail:
-                  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Imagem_n%C3%A3o_dispon%C3%ADvel.svg/240px-Imagem_n%C3%A3o_dispon%C3%ADvel.svg.png'),
+                  ''),
     );
   }
 }
