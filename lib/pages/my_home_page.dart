@@ -229,71 +229,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // String _handleAuthorsName(List<String> authors) {
-  //   if (authors.isEmpty) {
-  //     return 'Autor não disponível';
-  //   } else if (authors.length == 1) {
-  //     return authors.first;
-  //   } else if (authors.length == 2) {
-  //     return '${authors[0]} e ${authors[1]}';
-  //   }
-  //   return '${authors.first} e outros';
-  // }
-
-  // Widget noCoverImageWidget(Book book) {
-  //   return ClipRRect(
-  //     child: Container(
-  //       height: 150,
-  //       width: 130,
-  //       padding: const EdgeInsets.all(16.0),
-  //       decoration: BoxDecoration(
-  //         border: Border.all(
-  //           color: Colors.black54,
-  //         ),
-  //       ),
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //         children: [
-  //           Expanded(
-  //             child: Text(
-  //               book.volumeInfo.title.capitalize(),
-  //               textAlign: TextAlign.center,
-  //               overflow: TextOverflow.clip,
-
-  //               style: const TextStyle(
-  //                 fontWeight: FontWeight.bold,
-  //                 fontSize: 14,
-  //               ),
-  //             ),
-  //           ),
-  //           Text(
-  //             Tools.handleAuthorsName(book.volumeInfo.authors),
-  //             textAlign: TextAlign.center,
-  //             overflow: TextOverflow.clip,
-  //             style: const TextStyle(
-  //               fontWeight: FontWeight.normal,
-  //               fontSize: 12,
-  //             ),
-  //           ),
-  //           Text(
-  //             book.volumeInfo.publishedDate,
-  //             style: const TextStyle(
-  //               fontWeight: FontWeight.normal,
-  //               fontSize: 10,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: const Color(0xFFECEAF4),
       appBar: AppBar(
-        title: const Text("gBooks"),
+        title: const Text("Ligrá"),
       ),
       body: _error.isNotEmpty
           ? Center(child: Text('Error: $_error'))
