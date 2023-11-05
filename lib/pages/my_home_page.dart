@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       Uri uri = Uri.parse(fullUrl);
 
-      print('uri: ${uri.toString()}');
+      debugPrint('uri: ${uri.toString()}');
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gbooks/components/standard_cover_widget.dart';
+import 'package:gbooks/components/web_view_container.dart';
 import 'package:gbooks/enums/ownership.dart';
 import 'package:gbooks/enums/read_status.dart';
 import 'package:gbooks/models/shelf.dart';
@@ -164,58 +165,74 @@ class _BookDetailState extends State<BookDetail> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0.0, 20.0, 30.0, 0.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  book.accessInfo.webReaderLink.isNotEmpty
-                      ? const Icon(Icons.download_outlined)
-                      : const SizedBox(width: 1),
-                  GestureDetector(
-                    onTap: () {
-                      if (bookFromShelf.ownership == Ownership.owned) {
-                        bookFromShelf.ownership = Ownership.notOwned;
-                      } else {
-                        bookFromShelf.ownership = Ownership.owned;
-                      }
-                      _updateOrSaveBookInShelf(bookFromShelf);
-                      setState(() {
-                        bookFromShelf;
-                      });
-                    },
-                    child: Container(
-                      constraints: const BoxConstraints(
-                          // minHeight: 100,
-                          minWidth: 60,
-                          maxWidth: double.infinity,
-                          maxHeight: double.infinity),
-                      child: ownershipWidget(bookFromShelf),
+              child: SizedBox(
+                width: 420,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (book.accessInfo.webReaderLink.isNotEmpty) IconButton(
+                          icon: const Icon(
+                            Icons.local_library_outlined,
+                            color: Colors.blueAccent,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WebViewContainer(
+                                  book: book,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                    GestureDetector(
+                      onTap: () {
+                        if (bookFromShelf.ownership == Ownership.owned) {
+                          bookFromShelf.ownership = Ownership.notOwned;
+                        } else {
+                          bookFromShelf.ownership = Ownership.owned;
+                        }
+                        _updateOrSaveBookInShelf(bookFromShelf);
+                        setState(() {
+                          bookFromShelf;
+                        });
+                      },
+                      child: Container(
+                        constraints: const BoxConstraints(
+                            // minHeight: 100,
+                            minWidth: 60,
+                            maxWidth: double.infinity,
+                            maxHeight: double.infinity),
+                        child: ownershipWidget(bookFromShelf),
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if (bookFromShelf.readStatus == ReadStatus.read) {
-                        bookFromShelf.readStatus = ReadStatus.notRead;
-                      } else {
-                        bookFromShelf.readStatus = ReadStatus.read;
-                      }
-                      _updateOrSaveBookInShelf(bookFromShelf);
-                      setState(() {
-                        bookFromShelf;
-                      });
-                    },
-                    child: Container(
-                      constraints: const BoxConstraints(
-                          // minHeight: 100,
-                          minWidth: 60,
-                          maxWidth: double.infinity,
-                          maxHeight: double.infinity),
-                      child: readStatusWidget(bookFromShelf),
+                    const SizedBox(
+                      width: 10,
                     ),
-                  ),
-                ],
+                    GestureDetector(
+                      onTap: () {
+                        if (bookFromShelf.readStatus == ReadStatus.read) {
+                          bookFromShelf.readStatus = ReadStatus.notRead;
+                        } else {
+                          bookFromShelf.readStatus = ReadStatus.read;
+                        }
+                        _updateOrSaveBookInShelf(bookFromShelf);
+                        setState(() {
+                          bookFromShelf;
+                        });
+                      },
+                      child: Container(
+                        constraints: const BoxConstraints(
+                            // minHeight: 100,
+                            minWidth: 60,
+                            maxWidth: double.infinity,
+                            maxHeight: double.infinity),
+                        child: readStatusWidget(bookFromShelf),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Padding(
