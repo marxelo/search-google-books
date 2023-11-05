@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gbooks/components/standard_cover_widget.dart';
 import 'package:gbooks/components/web_view_container.dart';
+import 'package:gbooks/components/web_view_download.dart';
 import 'package:gbooks/enums/ownership.dart';
 import 'package:gbooks/enums/read_status.dart';
 import 'package:gbooks/models/shelf.dart';
@@ -82,6 +83,38 @@ class _BookDetailState extends State<BookDetail> {
     return authors.substring(0, authors.length - 1);
   }
 
+  Widget downloadViewWidget(String type) {
+    debugPrint('type: $type');
+    return Column(
+      children: [
+        const Icon(
+          Icons.download_outlined, color: Colors.blue,
+        ),
+        Text(
+          type,
+        ),
+      ],
+    );
+  }
+
+  Widget accessViewWidget(String viewability) {
+    debugPrint('viewability: $viewability');
+    return Column(
+      children: [
+        Icon(
+          Icons.local_library_outlined,
+          color:
+              viewability.contains('FULL') || viewability.contains('ALL_PAGES')
+                  ? Colors.green
+                  : Colors.amberAccent,
+        ),
+        const Text(
+          'Ler',
+        ),
+      ],
+    );
+  }
+
   Widget ownershipWidget(Shelf book) {
     return book.ownership.index == 0
         ? const Column(
@@ -128,6 +161,8 @@ class _BookDetailState extends State<BookDetail> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(book.accessInfo.toString());
+    debugPrint(' pdf link: ${book.accessInfo.pdf.downloadLink}');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes'),
@@ -168,24 +203,74 @@ class _BookDetailState extends State<BookDetail> {
               child: SizedBox(
                 width: 420,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    if (book.accessInfo.webReaderLink.isNotEmpty) IconButton(
-                          icon: const Icon(
-                            Icons.local_library_outlined,
-                            color: Colors.blueAccent,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => WebViewContainer(
-                                  book: book,
-                                ),
+                    if (book.accessInfo.webReaderLink.isNotEmpty &&
+                        book.accessInfo.accessViewStatus != 'NONE')
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WebViewContainer(
+                                book: book,
                               ),
-                            );
-                          },
+                            ),
+                          );
+                        },
+                        child: Container(
+                          constraints: const BoxConstraints(
+                              // minHeight: 100,
+                              minWidth: 60,
+                              maxWidth: double.infinity,
+                              maxHeight: double.infinity),
+                          child: accessViewWidget(
+                              widget.book.accessInfo.viewability),
                         ),
+                      ),
+                    if (book.accessInfo.epub.downloadLink.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WebViewDownload(
+                                url: book.accessInfo.epub.downloadLink,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          constraints: const BoxConstraints(
+                              // minHeight: 100,
+                              minWidth: 60,
+                              maxWidth: double.infinity,
+                              maxHeight: double.infinity),
+                          child: downloadViewWidget('EPUB'),
+                        ),
+                      ),
+                    if (book.accessInfo.pdf.downloadLink.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WebViewDownload(
+                                url: book.accessInfo.pdf.downloadLink,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          constraints: const BoxConstraints(
+                              // minHeight: 100,
+                              minWidth: 60,
+                              maxWidth: double.infinity,
+                              maxHeight: double.infinity),
+                          child: downloadViewWidget('PDF'),
+                        ),
+                      ),
+                    //
                     GestureDetector(
                       onTap: () {
                         if (bookFromShelf.ownership == Ownership.owned) {
@@ -206,9 +291,6 @@ class _BookDetailState extends State<BookDetail> {
                             maxHeight: double.infinity),
                         child: ownershipWidget(bookFromShelf),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
                     ),
                     GestureDetector(
                       onTap: () {

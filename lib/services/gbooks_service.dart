@@ -46,7 +46,7 @@ class BooksResponse {
 class Book {
   final String id;
   final VolumeInfo volumeInfo;
-   AccessInfo accessInfo;
+  AccessInfo accessInfo;
 
   Book({
     required this.id,
@@ -65,6 +65,7 @@ class Book {
 
 class VolumeInfo {
   final String title;
+  final String subtitle;
   final List<String> authors;
   final String description;
   final int pageCount;
@@ -73,6 +74,7 @@ class VolumeInfo {
 
   VolumeInfo(
       {required this.title,
+      required this.subtitle,
       required this.authors,
       required this.description,
       required this.pageCount,
@@ -82,6 +84,7 @@ class VolumeInfo {
   factory VolumeInfo.fromJson(Map<String, dynamic> json) {
     return VolumeInfo(
       title: json['title'] ?? 0,
+      subtitle: json['subtitle'] ?? '',
       authors: json.containsKey('authors')
           ? (json['authors'] as List).map((author) => author as String).toList()
           : ['Autor não disponível'],
@@ -110,28 +113,37 @@ class ImageLinks {
   }
 }
 
-
 class AccessInfo {
   Epub epub;
   Pdf pdf;
   String webReaderLink;
+  String viewability;
+  String accessViewStatus;
 
-  AccessInfo({required this.epub, required this.pdf, required this.webReaderLink});
+  AccessInfo({
+    required this.epub,
+    required this.pdf,
+    required this.webReaderLink,
+    required this.viewability,
+    required this.accessViewStatus,
+  });
 
   factory AccessInfo.fromJson(Map<String, dynamic> json) {
     return AccessInfo(
-
-      epub: json.containsKey('epub') 
-      ? Epub.fromJson(json['epub']) 
-      : Epub(downloadLink: ''),
-
-      pdf: json.containsKey('pdf') 
-      ? Pdf.fromJson(json['pdf']) 
-      : Pdf(downloadLink: ''),
-
-      webReaderLink: json.containsKey('webReaderLink') 
-      ? json['webReaderLink']
-      : '',
+      epub: json.containsKey('epub')
+          ? Epub.fromJson(json['epub'])
+          : Epub(downloadLink: ''),
+      pdf: json.containsKey('pdf')
+          ? Pdf.fromJson(json['pdf'])
+          : Pdf(downloadLink: ''),
+      webReaderLink:
+          json.containsKey('webReaderLink') ? json['webReaderLink'] : '',
+      accessViewStatus: json.containsKey('accessViewStatus')
+          ? json['accessViewStatus'].toString().toUpperCase()
+          : 'NONE',
+      viewability: json.containsKey('viewability')
+          ? json['viewability'].toString().toUpperCase()
+          : 'NONE',
     );
   }
 }
