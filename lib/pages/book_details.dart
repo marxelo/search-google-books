@@ -167,6 +167,9 @@ class _BookDetailState extends State<BookDetail> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  book.accessInfo.webReaderLink.isNotEmpty
+                      ? const Icon(Icons.download_outlined)
+                      : const SizedBox(width: 1),
                   GestureDetector(
                     onTap: () {
                       if (bookFromShelf.ownership == Ownership.owned) {

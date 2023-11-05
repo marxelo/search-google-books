@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 const String baseUrl =
     'https://www.googleapis.com/books/v1/volumes?q=+intitle:';
 const String urlSuffix =
-    '&maxResults=20&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks)&projection=lite';
+    '&maxResults=20&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks/thumbnail),items/accessInfo(epub/downloadLink,pdf/downloadLink,webReaderLink)';
 const String portugueseOnlyQueryParam = '&langRestrict=pt';
 
 class MyHomePage extends StatefulWidget {
