@@ -11,7 +11,8 @@ import 'package:http/http.dart' as http;
 const String baseUrl =
     'https://www.googleapis.com/books/v1/volumes?q=+intitle:';
 const String urlSuffix =
-    '&maxResults=20&langRestrict=pt&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks)';
+    '&maxResults=20&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks)&projection=lite';
+const String portugueseOnlyQueryParam = '&langRestrict=pt';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -23,6 +24,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // final FocusNode _buttonFocusNode = FocusNode(debugLabel: 'Menu Button');
+  // static const SingleActivator _showShortcut =
+  //     SingleActivator(LogicalKeyboardKey.keyS, control: true);
   final _scrollController = ScrollController();
   int _currentPage = 0;
   // final _list = <String>[];
@@ -40,6 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isLoading = false;
   bool _toastMessageSent = false;
+  bool _portugueseOnly = true;
+  bool _eBooks = false;
 
   Future<void> _fetchData(Search s) async {
     setState(() {
@@ -51,7 +57,18 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       String fullUrl =
           '$baseUrl${s.query}&startIndex=${s.startIndex.toString()}$urlSuffix';
-      print('fullurl: $fullUrl');
+
+      if (_portugueseOnly) {
+        fullUrl += portugueseOnlyQueryParam;
+      }
+
+      String filter = '&filter=full';
+
+      if (_eBooks) {
+        filter = '&filter=free-ebooks';
+      }
+
+      fullUrl += filter;
 
       Uri uri = Uri.parse(fullUrl);
 
@@ -78,11 +95,9 @@ class _MyHomePageState extends State<MyHomePage> {
           _error = '';
         });
       } else {
-
         throw Exception('Failed to load data');
       }
     } on Exception catch (e) {
-
       setState(() {
         _isLoading = false;
 
@@ -95,6 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_loadMore);
+    _portugueseOnly;
+    _eBooks;
     // _getBooks('Android');
   }
 
@@ -142,43 +159,73 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       isScrollControlled: true,
       context: context,
-      builder: (_) => Container(
-        padding: EdgeInsets.only(
-          top: 20,
-          left: 15,
-          right: 15,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            TextFormField(
-              controller: _searchController,
-              autofocus: true,
-              textInputAction: TextInputAction.search,
-              onEditingComplete: () async {
-                if (_searchController.text.isNotEmpty) {
-                  search.query = _searchController.text;
-                  search.startIndex = 0;
-                  books = [];
-                  _finalPage = false;
-                  _toastMessageSent = false;
-                  _fetchData(search);
-                }
+      builder: (context) => StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+        return Container(
+          padding: EdgeInsets.only(
+            top: 20,
+            left: 15,
+            right: 15,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              TextFormField(
+                controller: _searchController,
+                autofocus: true,
+                textInputAction: TextInputAction.search,
+                onEditingComplete: () async {
+                  if (_searchController.text.isNotEmpty) {
+                    search.query = _searchController.text;
+                    search.startIndex = 0;
+                    books = [];
+                    _finalPage = false;
+                    _toastMessageSent = false;
+                    _fetchData(search);
+                  }
 
-                _searchController.text = "";
+                  _searchController.text = "";
 
-                Navigator.of(context).pop();
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Palavra contida no título",
+                  Navigator.of(context).pop();
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Palavra contida no título",
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CheckboxMenuButton(
+                    value: _portugueseOnly,
+                    onChanged: (bool? newValue) {
+                      setState(
+                        () {
+                          _portugueseOnly = newValue!;
+                        },
+                      );
+                    },
+                    child: const Text('Apenas português'),
+                  ),
+                  CheckboxMenuButton(
+                    value: _eBooks,
+                    onChanged: (bool? newValue) {
+                      setState(
+                        () {
+                          _eBooks = newValue!;
+                        },
+                      );
+                    },
+                    child: const Text('e-books'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
