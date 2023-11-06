@@ -1,4 +1,3 @@
-import 'package:gbooks/enums/filter.dart';
 import 'package:gbooks/enums/order.dart';
 
 class Search {
@@ -7,8 +6,8 @@ class Search {
    int startIndex;
   final int maxResults;
   final bool inTitleOnly;
-  final bool inBrazilianPortugueseOnly;
-  final Filter filter;
+   bool inBrazilianPortugueseOnly;
+   String filter;
   final Order order;
 
    Search({
@@ -18,7 +17,7 @@ class Search {
     this.maxResults = 10,
     this.inTitleOnly = false,
     this.inBrazilianPortugueseOnly = false,
-    this.filter = Filter.ebooks,
+    this.filter = 'full',
     this.order = Order.relevance,
   });
 

@@ -4,8 +4,8 @@ import 'package:gbooks/components/web_view_container.dart';
 import 'package:gbooks/components/web_view_download.dart';
 import 'package:gbooks/enums/ownership.dart';
 import 'package:gbooks/enums/read_status.dart';
+import 'package:gbooks/models/book.dart';
 import 'package:gbooks/models/shelf.dart';
-import 'package:gbooks/services/gbooks_service.dart';
 import 'package:gbooks/utils/constants.dart';
 import 'package:gbooks/utils/dbhelper.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gbooks/services/gbooks_service.dart';
+import 'package:gbooks/models/book.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewContainer extends StatefulWidget {

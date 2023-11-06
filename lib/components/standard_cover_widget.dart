@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gbooks/extensions/capitalize.dart';
-import 'package:gbooks/services/gbooks_service.dart';
+import 'package:gbooks/models/book.dart';
 import 'package:gbooks/utils/tools.dart';
 
 class StandardCoverWidget extends StatelessWidget {
