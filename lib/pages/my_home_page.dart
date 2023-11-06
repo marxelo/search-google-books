@@ -13,6 +13,13 @@ const String baseUrl =
 const String urlSuffix =
     '&maxResults=20&fields=totalItems,items/id,items/volumeInfo(title,authors,publishedDate,description,pageCount,imageLinks/thumbnail),items/accessInfo(viewability,epub/downloadLink,pdf/downloadLink,webReaderLink,accessViewStatus)';
 const String portugueseOnlyQueryParam = '&langRestrict=pt';
+const List<String> list = <String>[
+  'Grátis',
+  'e-books grátis',
+  'e-books',
+  'Amostra',
+  'Tudo'
+];
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -31,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentPage = 0;
   // final _list = <String>[];
   final TextEditingController _searchController = TextEditingController();
+  String dropdownValue = list.first;
 
   late List<Book> books = [];
 
@@ -45,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoading = false;
   bool _toastMessageSent = false;
   bool _portugueseOnly = true;
-  bool _eBooks = false;
+  // bool _eBooks = false;
 
   Future<void> _fetchData(Search s) async {
     setState(() {
@@ -64,11 +72,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
       String filter = '&filter=full';
 
-      if (_eBooks) {
-        filter = '&filter=free-ebooks';
+      // if (_eBooks) {
+      //   filter = '&filter=free-ebooks';
+      // }
+
+      //       'Grátis',
+      // 'e-books grátis',
+      // 'e-books',
+      // 'Amostra',
+      // 'Tudo'
+
+      switch (dropdownValue) {
+        case 'Grátis':
+          filter = '&filter=full';
+          break;
+        case 'e-books grátis':
+          filter = '&filter=free-ebooks';
+          break;
+        case 'e-books':
+          filter = '&filter=e-books';
+          break;
+        case 'Amostra':
+          filter = '&filter=partial';
+          break;
+        default:
+          filter = '';
       }
 
-      fullUrl += filter;
+      if (filter.isNotEmpty) {
+        fullUrl += filter;
+      }
 
       Uri uri = Uri.parse(fullUrl);
 
@@ -111,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _scrollController.addListener(_loadMore);
     _portugueseOnly;
-    _eBooks;
+    // _eBooks;
     // _getBooks('Android');
   }
 
@@ -150,7 +183,23 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
+  Future<void> _onSearchPressed() async {
+    if (_searchController.text.isNotEmpty) {
+      search.query = _searchController.text;
+      search.startIndex = 0;
+      books = [];
+      _finalPage = false;
+      _toastMessageSent = false;
+      _fetchData(search);
+    }
+
+    _searchController.text = "";
+
+    Navigator.of(context).pop();
+  }
+
   void showBottomSheet() async {
+    _searchController.text = search.query;
     showModalBottomSheet(
       // backgroundColor: Colors.grey,
       elevation: 5,
@@ -172,28 +221,29 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              TextFormField(
-                controller: _searchController,
-                autofocus: true,
-                textInputAction: TextInputAction.search,
-                onEditingComplete: () async {
-                  if (_searchController.text.isNotEmpty) {
-                    search.query = _searchController.text;
-                    search.startIndex = 0;
-                    books = [];
-                    _finalPage = false;
-                    _toastMessageSent = false;
-                    _fetchData(search);
-                  }
-
-                  _searchController.text = "";
-
-                  Navigator.of(context).pop();
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Palavra contida no título",
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _searchController,
+                      autofocus: true,
+                      textInputAction: TextInputAction.search,
+                      onTapOutside: (PointerDownEvent event) {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      },
+                      onEditingComplete: () => _onSearchPressed(),
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Pesquisar",
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => _onSearchPressed(),
+                    icon: const Icon(Icons.search_outlined),
+                  ),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -207,18 +257,32 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                       );
                     },
-                    child: const Text('Apenas português'),
+                    child: const Text('Em português'),
                   ),
-                  CheckboxMenuButton(
-                    value: _eBooks,
-                    onChanged: (bool? newValue) {
-                      setState(
-                        () {
-                          _eBooks = newValue!;
-                        },
-                      );
-                    },
-                    child: const Text('e-books'),
+                  Listener(
+                    onPointerDown: (_) => FocusScope.of(context).unfocus(),
+                    child: DropdownMenu<String>(
+                      initialSelection: list.first,
+                      requestFocusOnTap: false,
+                      enableFilter: false,
+                      enableSearch: false,
+                      inputDecorationTheme: const InputDecorationTheme(
+                        border: InputBorder.none,
+                        // disabledBorder: InputBorder.none,
+                        // activeIndicatorBorder: BorderSide.none,
+                      ),
+                      onSelected: (String? value) {
+                        // This is called when the user selects an item.
+                        setState(() {
+                          dropdownValue = value!;
+                        });
+                      },
+                      dropdownMenuEntries:
+                          list.map<DropdownMenuEntry<String>>((String value) {
+                        return DropdownMenuEntry<String>(
+                            value: value, label: value);
+                      }).toList(),
+                    ),
                   ),
                 ],
               ),
