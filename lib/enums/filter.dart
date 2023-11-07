@@ -1,27 +1,25 @@
 enum Filter {
-  full(apiValor: 'full', dropDownValor: 'gratis'),
-  freeEbooks(apiValor: 'free-ebooks', dropDownValor: 'free-ebooks'),
-  ebooks(apiValor: 'e-books', dropDownValor: 'e-books'),
-  paidEbooks(apiValor: 'paid-ebooks', dropDownValor: 'paid-e-books'),
-  partial(apiValor: 'partial', dropDownValor: 'partial'),
-  all(apiValor: 'all', dropDownValor: 'tudo');
+  all(apiValue: 'all', dropDownValue: 'Não filtrar'),
+  ebooks(apiValue: 'e-books', dropDownValue: 'E-book'),
+  freeEbooks(apiValue: 'free-ebooks', dropDownValue: 'E-book gratuito'),
+  full(apiValue: 'full', dropDownValue: 'Gratuito'),
+  paidEbooks(apiValue: 'paid-ebooks', dropDownValue: 'E-book pago'),
+  partial(apiValue: 'partial', dropDownValue: 'Acesso parcial');
 
   const Filter({
-    required this.apiValor,
-    required this.dropDownValor,
+    required this.apiValue,
+    required this.dropDownValue,
   });
 
-  final String apiValor;
-  final String dropDownValor;
+  final String apiValue;
+  final String dropDownValue;
 
- static String getApiValorByDropDownValor(String dropDownValue) {
-  for (Filter filter in Filter.values) {
-    if (filter.dropDownValor == dropDownValue) {
-      return filter.apiValor;
+  static String getApiValorByDropDownValor(String dropDownValue) {
+    for (Filter filter in Filter.values) {
+      if (filter.dropDownValue == dropDownValue) {
+        return filter.apiValue;
+      }
     }
+    return '';
   }
-  return '';
-}
-
-
 }

@@ -5,7 +5,7 @@ import 'package:gbooks/enums/filter.dart';
 import 'package:gbooks/models/book.dart';
 import 'package:gbooks/models/books_response.dart';
 import 'package:gbooks/models/search.dart';
-import 'package:gbooks/services/gbooks_service.dart';
+import 'package:gbooks/services/google_books_service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -18,8 +18,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _scrollController = ScrollController();
-  int _currentPage = 0;
+  // int _currentPage = 0;
   final TextEditingController _searchController = TextEditingController();
+  final int maxResults = 20;
 
   late List<Book> books = [];
 
@@ -36,14 +37,14 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _portugueseOnly = false;
 
   final List<String> list = <String>[
-    Filter.full.dropDownValor,
-    Filter.freeEbooks.dropDownValor,
-    Filter.ebooks.dropDownValor,
-    Filter.partial.dropDownValor,
-    Filter.all.dropDownValor
+    Filter.full.dropDownValue,
+    Filter.freeEbooks.dropDownValue,
+    Filter.ebooks.dropDownValue,
+    Filter.partial.dropDownValue,
+    Filter.all.dropDownValue
   ];
 
-  late String dropdownValue = list.first;
+  late String dropdownValue = list.last;
 
   Future<void> _fetchData(Search search) async {
     setState(() {
@@ -56,10 +57,11 @@ class _MyHomePageState extends State<MyHomePage> {
       BooksResponse response = await GoogleBooksClient().getBooks(search);
 
       if (response.statusCode == 200) {
-        debugPrint(response.toString());
+        debugPrint(response.items.length.toString());
         setState(() {
           if (response.items.isNotEmpty) {
             books.addAll(response.items);
+            debugPrint(' ============> ${response.totalItems.toString()}');
 
             if (response.items.length < _numberOfBooksPerRequest) {
               _finalPage = true;
@@ -110,8 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        _currentPage++;
-        search.startIndex = _currentPage;
+        // _currentPage++;
+        search.startIndex += maxResults;
 
         _fetchData(search);
       }
@@ -140,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _fetchData(search);
     }
 
-    _searchController.text = "";
+    _searchController.text = "Marcelo";
 
     Navigator.of(context).pop();
   }
@@ -178,15 +180,37 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Ligrá"),
-      ),
-      body: _error.isNotEmpty
-          ? Center(child: Text('Error: $_error'))
-          : ListView.builder(
-              controller: _scrollController,
-              itemCount: books.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        controller: _scrollController,
+        slivers: <Widget>[
+          SliverAppBar.large(
+            floating: true,
+            pinned: true,
+            snap: false,
+            backgroundColor: Colors.white,
+            shadowColor: Colors.black38,
+            surfaceTintColor: Colors.white,
+            actions: [
+              IconButton(
+                onPressed: () => showBottomSheet(),
+                icon: const Icon(Icons.search_outlined),
+              )
+            ],
+            // expandedHeight: 160.0,
+            flexibleSpace: const FlexibleSpaceBar(
+              centerTitle: true,
+              expandedTitleScale: 2.0,
+              title: Text(
+                'Ligrá',
+                style: TextStyle(color: Colors.black),
+              ),
+              // background: FlutterLogo(),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
                 if (index == books.length) {
                   return const Center(child: CircularProgressIndicator());
                 } else {
@@ -195,11 +219,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 }
               },
+              childCount: books.length + (_isLoading ? 1 : 0),
             ),
-      //
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showBottomSheet(),
-        child: const Icon(Icons.search_outlined),
+          )
+        ],
       ),
     );
   }

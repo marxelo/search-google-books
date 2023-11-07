@@ -25,14 +25,20 @@ class SearchBottomSheet extends StatefulWidget {
 
 class _SearchBottomSheetState extends State<SearchBottomSheet> {
   final List<String> list = <String>[
-    Filter.full.dropDownValor,
-    Filter.freeEbooks.dropDownValor,
-    Filter.ebooks.dropDownValor,
-    Filter.partial.dropDownValor,
-    Filter.all.dropDownValor
+    Filter.partial.dropDownValue,
+    Filter.ebooks.dropDownValue,
+    Filter.freeEbooks.dropDownValue,
+    Filter.full.dropDownValue,
+    Filter.all.dropDownValue
   ];
 
   late String dropdownValue = list.last;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +61,9 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
                   controller: widget.searchController,
                   autofocus: true,
                   textInputAction: TextInputAction.search,
-                  onTapOutside: (PointerDownEvent event) {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                  },
+                  // onTapOutside: (PointerDownEvent event) {
+                  //   FocusManager.instance.primaryFocus?.unfocus();
+                  // },
                   onEditingComplete: widget.onSearchPressed,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -71,13 +77,16 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
               ),
             ],
           ),
+          const SizedBox(
+            height: 10,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CheckboxMenuButton(
                 value: widget.portugueseOnly,
                 onChanged: widget.onPortugueseOnlyChanged,
-                child: const Text('Em pt_br'),
+                child: const Text('Em português'),
               ),
               Listener(
                 onPointerDown: (_) => FocusScope.of(context).unfocus(),
@@ -86,8 +95,12 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
                   requestFocusOnTap: false,
                   enableFilter: false,
                   enableSearch: false,
-                  inputDecorationTheme: const InputDecorationTheme(
-                    border: InputBorder.none,
+                  inputDecorationTheme: InputDecorationTheme(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none),
+                    // fillColor: Colors.grey,
+                    filled: true,
                   ),
                   onSelected: widget.onDropdownValueChanged,
                   dropdownMenuEntries: list.map<DropdownMenuEntry<String>>(

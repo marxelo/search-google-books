@@ -26,9 +26,10 @@ class _BookListTileWidgetState extends State<BookListTileWidget> {
           ),
         );
       },
-      child: ListTile(
+      child: ListTile(tileColor: Colors.white,
         title: Card(
-          surfaceTintColor: Theme.of(context).colorScheme.background,
+          color: Colors.white,
+          surfaceTintColor: Colors.white,
           margin: const EdgeInsets.fromLTRB(0.0, 2.0, 0.0, 2.0),
           child: Padding(
             padding: const EdgeInsets.all(4.0),
