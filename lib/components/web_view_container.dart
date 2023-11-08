@@ -31,6 +31,7 @@ class _WebViewContainerState extends State<WebViewContainer> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.book.volumeInfo.title),
+        backgroundColor: Colors.white,
       ),
       body: WebViewWidget(controller: controller),
     );

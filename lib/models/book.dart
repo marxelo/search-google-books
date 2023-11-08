@@ -1,4 +1,3 @@
-
 class Book {
   final String id;
   final VolumeInfo volumeInfo;
@@ -16,6 +15,18 @@ class Book {
       volumeInfo: VolumeInfo.fromJson(json['volumeInfo']),
       accessInfo: AccessInfo.fromJson(json['accessInfo']),
     );
+  }
+
+  static List<Book> filterBooksWithoutViewabilityNoPages(List<Book> books) {
+    List<Book> filteredBooks = [];
+
+    for (Book book in books) {
+      if (book.accessInfo.viewability != 'NO_PAGES') {
+        filteredBooks.add(book);
+      }
+    }
+
+    return filteredBooks;
   }
 }
 

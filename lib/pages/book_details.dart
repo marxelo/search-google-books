@@ -166,6 +166,7 @@ class _BookDetailState extends State<BookDetail> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes'),
+        backgroundColor: Colors.white,
       ),
       body: Center(
         child: SingleChildScrollView(

@@ -35,39 +35,47 @@ class _MyHomePageState extends State<MyHomePage> {
   late String _selectedFilter = 'all';
   late String _selectedLanguage = 'all';
 
-  Future<void> _fetchData(Search search) async {
+  Future<void> _fetchAndFilterBooks(Search search) async {
     setState(() {
       _isLoading = true;
 
       _error = '';
     });
 
+    List<Book> tempBookList = [];
+
+    while (tempBookList.length < maxResults && !_finalPage) {
+      List<Book> response = await _fetchBooks(search);
+
+      if (response.isNotEmpty) {
+        tempBookList
+            .addAll(Book.filterBooksWithoutViewabilityNoPages(response));
+      }
+
+      if (response.length < maxResults) {
+        _finalPage = true;
+      }
+
+      search.startIndex += maxResults;
+    }
+    books.addAll(tempBookList);
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<List<Book>> _fetchBooks(Search search) async {
+    List<Book> empty = [];
     try {
       BooksResponse response = await GoogleBooksClient().getBooks(search);
 
       if (response.statusCode == 200) {
-        debugPrint(response.items.length.toString());
-        setState(() {
-          if (response.items.isNotEmpty) {
-            books.addAll(response.items);
-            debugPrint(' ============> ${response.totalItems.toString()}');
-
-            if (response.items.length < maxResults) {
-              _finalPage = true;
-            }
-            if (response.items.isEmpty) {
-              _showSnackBar(context, 'Não encontrado');
-            }
-          } else {
-            _finalPage = true;
-            _showSnackBar(context, 'Não encontrado');
-          }
-          _isLoading = false;
-          _error = '';
-        });
-      } else {
-        throw Exception('Failed to load data');
+        if (response.items.isNotEmpty) {
+          return response.items;
+        }
       }
+
+      return empty;
     } on Exception catch (e) {
       setState(() {
         _isLoading = false;
@@ -75,8 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
         _error = e.toString();
         _showSnackBar(context, _error);
       });
+      return empty;
     }
   }
+
 
   @override
   void initState() {
@@ -105,7 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
           _scrollController.position.maxScrollExtent) {
         search.startIndex += maxResults;
 
-        _fetchData(search);
+        // _fetchData(search); // aki
+        _fetchAndFilterBooks(search);
       }
     }
   }
@@ -137,7 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
       books = [];
       _finalPage = false;
       _toastMessageSent = false;
-      _fetchData(search);
+      // _fetchData(search); // aki
+      _fetchAndFilterBooks(search);
     }
 
     _searchController.text = "Marcelo";
@@ -187,12 +199,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: const Icon(Icons.search_outlined),
               )
             ],
-            flexibleSpace: const FlexibleSpaceBar(
-              centerTitle: true,
-              expandedTitleScale: 2.0,
-              title: Text(
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 10),
+              title: const Text(
                 'Ligrá',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              expandedTitleScale: 3.0,
+              background: AnimatedContainer(
+                width: 250,
+                height: 250,
+                duration: const Duration(
+                  milliseconds: 1000,
+                ),
+                curve: Curves.ease,
+                child: Image.asset(
+                  'assets/appbar_bg.png',
+                  colorBlendMode: BlendMode.softLight,
+                  color: Colors.white,
+                  centerSlice: Rect.largest,
+                ),
               ),
             ),
           ),

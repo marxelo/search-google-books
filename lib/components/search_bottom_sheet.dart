@@ -73,33 +73,42 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
             children: <Widget>[
               Text('Filtrar por:', style: textTheme.labelLarge),
               const SizedBox(height: 5.0),
-              Wrap(
-                alignment: WrapAlignment.start,
-                spacing: 5.0,
-                children: List<Widget>.generate(
-                  // filterList.length,
-                  Filter.values.length,
-                  (int index) {
-                    return ChoiceChip(
-                      side: BorderSide.none,
-                      backgroundColor: Colors.black12,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(16),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Wrap(
+                  alignment: WrapAlignment.start,
+                  direction: Axis.horizontal,
+                  spacing: 5.0,
+                  children: List<Widget>.generate(
+                    // filterList.length,
+                    Filter.values.length,
+                    (int index) {
+                      return ChoiceChip(
+                        side: BorderSide.none,
+                        backgroundColor: Colors.black12,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(16),
+                          ),
                         ),
-                      ),
-                      label: Text(Filter.values[index].dropDownValue),
-                      selected: _value == index,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          _value = selected ? index : null;
-                          widget
-                              .onFilterSelection(Filter.values[index].apiValue);
-                        });
-                      },
-                    );
-                  },
-                ).toList(),
+                        label: Text(Filter.values[index].dropDownValue),
+                        selected: _value == index,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            _value = selected ? index : null;
+                            if (_value != null) {
+                              widget.onFilterSelection(
+                                  Filter.values[index].apiValue);
+                            } else {
+                              widget.onFilterSelection(
+                                  Filter.all.apiValue);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ).toList(),
+                ),
               ),
             ],
           ),
@@ -127,9 +136,13 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
                       selected: _languageValue == index,
                       onSelected: (bool selected) {
                         setState(() {
-                          widget
-                              .onLanguageSelection(Language.values[index].name);
                           _languageValue = selected ? index : null;
+                          if (_languageValue != null) {
+                            widget.onLanguageSelection(
+                                Language.values[index].name);
+                          } else {
+                            widget.onLanguageSelection(Language.all.name);
+                          }
                           // this.widget.selectedLanguage = 'br';
                         });
                       },
