@@ -27,13 +27,12 @@ class _MyHomePageState extends State<MyHomePage> {
   String _error = '';
 
   final googleBooksClient = GoogleBooksClient();
-  final int _numberOfBooksPerRequest = 20;
   bool _finalPage = false;
 
   bool _isLoading = false;
   bool _toastMessageSent = false;
 
-  late String selectedFilter = 'all';
+  late String _selectedFilter = 'all';
   late String _selectedLanguage = 'all';
 
   Future<void> _fetchData(Search search) async {
@@ -53,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
             books.addAll(response.items);
             debugPrint(' ============> ${response.totalItems.toString()}');
 
-            if (response.items.length < _numberOfBooksPerRequest) {
+            if (response.items.length < maxResults) {
               _finalPage = true;
             }
             if (response.items.isEmpty) {
@@ -83,9 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_loadMore);
-    selectedFilter = 'full';
-   _selectedLanguage = 'all';
-
+    _selectedFilter = 'full';
+    _selectedLanguage = 'all';
   }
 
   @override
@@ -123,13 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _onLanguageSelection(newValue) async {
-    debugPrint('language: $newValue');
     _selectedLanguage = newValue.toString();
   }
 
   Future<void> _onFilterSelection(newValue) async {
-    debugPrint('filter: $newValue');
-    selectedFilter = newValue.toString();
+    _selectedFilter = newValue.toString();
   }
 
   Future<void> _onSearchPressed() async {
@@ -137,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
       search.query = _searchController.text;
       search.startIndex = 0;
       search.language = _selectedLanguage;
-      search.filter = selectedFilter;
+      search.filter = _selectedFilter;
       books = [];
       _finalPage = false;
       _toastMessageSent = false;
@@ -158,7 +154,6 @@ class _MyHomePageState extends State<MyHomePage> {
       enableDrag: true,
       backgroundColor: Colors.white,
       showDragHandle: true,
-      // shape: Border.symmetric(),
       useSafeArea: true,
       builder: (context) {
         return SearchBottomSheet(
@@ -205,7 +200,12 @@ class _MyHomePageState extends State<MyHomePage> {
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 if (index == books.length) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SizedBox(
+                    height: 600,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 } else {
                   return BookListTileWidget(
                     book: books[index],
