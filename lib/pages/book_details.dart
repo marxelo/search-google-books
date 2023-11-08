@@ -88,7 +88,8 @@ class _BookDetailState extends State<BookDetail> {
     return Column(
       children: [
         const Icon(
-          Icons.download_outlined, color: Colors.blue,
+          Icons.download_outlined,
+          color: Colors.blue,
         ),
         Text(
           type,
@@ -195,7 +196,7 @@ class _BookDetailState extends State<BookDetail> {
               padding: const EdgeInsets.all(16),
               child: Text(
                 book.volumeInfo.title,
-                style: const TextStyle(fontSize: 28),
+                style: const TextStyle(fontSize: 24),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -341,18 +342,18 @@ class _BookDetailState extends State<BookDetail> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Informações do Livro',
+                              'Sobre este livro',
                               textAlign: TextAlign.left,
                               overflow: TextOverflow.clip,
                               style: TextStyle(
-                                  fontSize: 22,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black87),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: kAboutBookSizedBoxHeight),
                       Row(
                         children: [
                           Icon(
@@ -372,7 +373,7 @@ class _BookDetailState extends State<BookDetail> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: kAboutBookSizedBoxHeight),
                       Row(
                         children: [
                           const Icon(
@@ -390,7 +391,7 @@ class _BookDetailState extends State<BookDetail> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: kAboutBookSizedBoxHeight),
                       Row(
                         children: [
                           const Icon(
@@ -408,7 +409,7 @@ class _BookDetailState extends State<BookDetail> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: kAboutBookSizedBoxHeight),
                       Row(
                         children: [
                           // const Text('E-mail: '),
@@ -423,17 +424,14 @@ class _BookDetailState extends State<BookDetail> {
                             child: Text(
                               book.volumeInfo.description,
                               style: const TextStyle(
-                                // color: Colors.black87,
-
                                 fontSize: 16,
                                 overflow: TextOverflow.clip,
-                                // fontWeight: FontWeight.bold
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: kAboutBookSizedBoxHeight),
                     ],
                   ),
                 ),

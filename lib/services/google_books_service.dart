@@ -13,7 +13,7 @@ class GoogleBooksClient {
   final String portugueseOnlyQueryParam = '&langRestrict=pt';
 
   Future<BooksResponse> getBooks(Search search) async {
-    debugPrint(search.toString());
+    // debugPrint(search.toString());
 
     String fullUrl =
         '$baseUrl${search.query}&startIndex=${search.startIndex.toString()}$urlSuffix';

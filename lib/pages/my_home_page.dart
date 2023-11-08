@@ -5,6 +5,7 @@ import 'package:gbooks/models/book.dart';
 import 'package:gbooks/models/books_response.dart';
 import 'package:gbooks/models/search.dart';
 import 'package:gbooks/services/google_books_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -86,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
       return empty;
     }
   }
-
 
   @override
   void initState() {
@@ -201,11 +201,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(left: 10),
-              title: const Text(
+              title: Text(
                 'Ligrá',
-                style: TextStyle(
+                style: GoogleFonts.prata(
+                    textStyle: const TextStyle(
                   color: Colors.black,
-                ),
+                )),
               ),
               expandedTitleScale: 3.0,
               background: AnimatedContainer(
@@ -220,6 +221,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   colorBlendMode: BlendMode.softLight,
                   color: Colors.white,
                   centerSlice: Rect.largest,
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 50,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: SizedBox(
+                  child: Text(
+                    'Livros grátis',
+                    style: GoogleFonts.prata(
+                      textStyle: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

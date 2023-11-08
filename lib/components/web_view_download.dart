@@ -30,6 +30,7 @@ class _WebViewDownloadState extends State<WebViewDownload> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Download'),
+        backgroundColor: Colors.white,
       ),
       body: WebViewWidget(controller: controller),
     );

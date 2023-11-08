@@ -84,7 +84,7 @@ class _BookListTileWidgetState extends State<BookListTileWidget> {
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.clip,
                             style: const TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.w200,
                             ),
                           ),
