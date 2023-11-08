@@ -18,12 +18,11 @@ class GoogleBooksClient {
     String fullUrl =
         '$baseUrl${search.query}&startIndex=${search.startIndex.toString()}$urlSuffix';
 
-    if (search.inBrazilianPortugueseOnly) {
-      fullUrl += portugueseOnlyQueryParam;
+    if (search.language != 'all') {
+      fullUrl += '&langRestrict=${search.language}';
     }
 
-    if (search.filter != 'all') {
-      // filter = '&filter=${search.filter}';
+    if (search.filter != 'Não Filtrar' && search.filter != 'all' ) {
       fullUrl += '&filter=${search.filter}';
     }
 

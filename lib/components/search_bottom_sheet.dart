@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:gbooks/enums/filter.dart';
+import 'package:gbooks/enums/language.dart';
 
 class SearchBottomSheet extends StatefulWidget {
   final TextEditingController searchController;
-  final bool portugueseOnly;
-  final String dropdownValue;
+
   final Function() onSearchPressed;
-  final Function(bool?) onPortugueseOnlyChanged;
-  final Function(String?) onDropdownValueChanged;
+
+  final String selectedLanguage;
+  final Function(String?) onLanguageSelection;
+  final Function(String?) onFilterSelection;
 
   const SearchBottomSheet({
     super.key,
     required this.searchController,
-    required this.portugueseOnly,
-    required this.dropdownValue,
     required this.onSearchPressed,
-    required this.onPortugueseOnlyChanged,
-    required this.onDropdownValueChanged,
+    required this.selectedLanguage,
+    required this.onLanguageSelection,
+    required this.onFilterSelection,
   });
 
   @override
@@ -24,25 +25,19 @@ class SearchBottomSheet extends StatefulWidget {
 }
 
 class _SearchBottomSheetState extends State<SearchBottomSheet> {
-  final List<String> list = <String>[
-    Filter.partial.dropDownValue,
-    Filter.ebooks.dropDownValue,
-    Filter.freeEbooks.dropDownValue,
-    Filter.full.dropDownValue,
-    Filter.all.dropDownValue
-  ];
-
-  late String dropdownValue = list.last;
+  int? _value = 0;
+  int? _languageValue = 3;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
     return Container(
+      color: Colors.white,
       padding: EdgeInsets.only(
         top: 20,
         left: 15,
@@ -51,65 +46,96 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: widget.searchController,
-                  autofocus: true,
-                  textInputAction: TextInputAction.search,
-                  // onTapOutside: (PointerDownEvent event) {
-                  //   FocusManager.instance.primaryFocus?.unfocus();
-                  // },
-                  onEditingComplete: widget.onSearchPressed,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Pesquisar",
-                  ),
+          TextFormField(
+            controller: widget.searchController,
+            autofocus: true,
+            textInputAction: TextInputAction.search,
+            onEditingComplete: widget.onSearchPressed,
+            decoration: const InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(50)),
+                  borderSide: BorderSide(color: Colors.black12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(50)),
+                borderSide: BorderSide(
+                  color: Colors.black12,
                 ),
               ),
-              IconButton(
-                onPressed: widget.onSearchPressed,
-                icon: const Icon(Icons.search_outlined),
+              hintText: "Pesquisar",
+            ),
+          ),
+          const SizedBox(height: 30),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text('Filtrar por:', style: textTheme.labelLarge),
+              const SizedBox(height: 5.0),
+              Wrap(
+                alignment: WrapAlignment.start,
+                spacing: 5.0,
+                children: List<Widget>.generate(
+                  // filterList.length,
+                  Filter.values.length,
+                  (int index) {
+                    return ChoiceChip(
+                      side: BorderSide.none,
+                      backgroundColor: Colors.black12,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(16),
+                        ),
+                      ),
+                      label: Text(Filter.values[index].dropDownValue),
+                      selected: _value == index,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _value = selected ? index : null;
+                          widget
+                              .onFilterSelection(Filter.values[index].apiValue);
+                        });
+                      },
+                    );
+                  },
+                ).toList(),
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CheckboxMenuButton(
-                value: widget.portugueseOnly,
-                onChanged: widget.onPortugueseOnlyChanged,
-                child: const Text('Em português'),
-              ),
-              Listener(
-                onPointerDown: (_) => FocusScope.of(context).unfocus(),
-                child: DropdownMenu<String>(
-                  initialSelection: widget.dropdownValue,
-                  requestFocusOnTap: false,
-                  enableFilter: false,
-                  enableSearch: false,
-                  inputDecorationTheme: InputDecorationTheme(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide.none),
-                    // fillColor: Colors.grey,
-                    filled: true,
-                  ),
-                  onSelected: widget.onDropdownValueChanged,
-                  dropdownMenuEntries: list.map<DropdownMenuEntry<String>>(
-                    (String value) {
-                      return DropdownMenuEntry<String>(
-                          value: value, label: value);
-                    },
-                  ).toList(),
-                ),
+          const SizedBox(height: 30),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('Idioma:', style: textTheme.labelLarge),
+              const SizedBox(height: 5.0),
+              Wrap(
+                spacing: 5.0,
+                children: List<Widget>.generate(
+                  Language.values.length,
+                  (int index) {
+                    return ChoiceChip(
+                      side: BorderSide.none,
+                      backgroundColor: Colors.black12,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(16),
+                        ),
+                      ),
+                      label: Text(Language.values[index].fullName),
+                      selected: _languageValue == index,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          widget
+                              .onLanguageSelection(Language.values[index].name);
+                          _languageValue = selected ? index : null;
+                          // this.widget.selectedLanguage = 'br';
+                        });
+                      },
+                    );
+                  },
+                ).toList(),
               ),
             ],
           ),

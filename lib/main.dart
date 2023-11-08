@@ -15,7 +15,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Ligrá',
-            theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: lightColorScheme,
+        bottomSheetTheme: const BottomSheetThemeData(
+          surfaceTintColor: Colors.white,
+        ),
+      ),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       home: const MyHomePage(title: 'Ligrá - Livros Grátis'),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gbooks/components/book_list_tile_widget.dart';
 import 'package:gbooks/components/search_bottom_sheet.dart';
-import 'package:gbooks/enums/filter.dart';
 import 'package:gbooks/models/book.dart';
 import 'package:gbooks/models/books_response.dart';
 import 'package:gbooks/models/search.dart';
@@ -18,7 +17,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _scrollController = ScrollController();
-  // int _currentPage = 0;
   final TextEditingController _searchController = TextEditingController();
   final int maxResults = 20;
 
@@ -34,17 +32,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isLoading = false;
   bool _toastMessageSent = false;
-  bool _portugueseOnly = false;
 
-  final List<String> list = <String>[
-    Filter.full.dropDownValue,
-    Filter.freeEbooks.dropDownValue,
-    Filter.ebooks.dropDownValue,
-    Filter.partial.dropDownValue,
-    Filter.all.dropDownValue
-  ];
-
-  late String dropdownValue = list.last;
+  late String selectedFilter = 'all';
+  late String _selectedLanguage = 'all';
 
   Future<void> _fetchData(Search search) async {
     setState(() {
@@ -84,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _isLoading = false;
 
         _error = e.toString();
+        _showSnackBar(context, _error);
       });
     }
   }
@@ -92,7 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_loadMore);
-    _portugueseOnly;
+    selectedFilter = 'full';
+   _selectedLanguage = 'all';
+
   }
 
   @override
@@ -112,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        // _currentPage++;
         search.startIndex += maxResults;
 
         _fetchData(search);
@@ -130,12 +122,22 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
+  Future<void> _onLanguageSelection(newValue) async {
+    debugPrint('language: $newValue');
+    _selectedLanguage = newValue.toString();
+  }
+
+  Future<void> _onFilterSelection(newValue) async {
+    debugPrint('filter: $newValue');
+    selectedFilter = newValue.toString();
+  }
+
   Future<void> _onSearchPressed() async {
     if (_searchController.text.isNotEmpty) {
       search.query = _searchController.text;
       search.startIndex = 0;
-      search.inBrazilianPortugueseOnly = _portugueseOnly;
-      search.filter = Filter.getApiValorByDropDownValor(dropdownValue);
+      search.language = _selectedLanguage;
+      search.filter = selectedFilter;
       books = [];
       _finalPage = false;
       _toastMessageSent = false;
@@ -151,27 +153,20 @@ class _MyHomePageState extends State<MyHomePage> {
     _searchController.text = search.query;
     showModalBottomSheet(
       elevation: 5,
-      shape: const ContinuousRectangleBorder(
-        borderRadius: BorderRadiusDirectional.zero,
-      ),
       isScrollControlled: true,
       context: context,
+      enableDrag: true,
+      backgroundColor: Colors.white,
+      showDragHandle: true,
+      // shape: Border.symmetric(),
+      useSafeArea: true,
       builder: (context) {
         return SearchBottomSheet(
           searchController: _searchController,
-          portugueseOnly: _portugueseOnly,
-          dropdownValue: dropdownValue,
+          selectedLanguage: _selectedLanguage,
           onSearchPressed: _onSearchPressed,
-          onPortugueseOnlyChanged: (newValue) {
-            setState(() {
-              _portugueseOnly = newValue!;
-            });
-          },
-          onDropdownValueChanged: (value) {
-            setState(() {
-              dropdownValue = value!;
-            });
-          },
+          onLanguageSelection: _onLanguageSelection,
+          onFilterSelection: _onFilterSelection,
         );
       },
     );
@@ -197,7 +192,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: const Icon(Icons.search_outlined),
               )
             ],
-            // expandedHeight: 160.0,
             flexibleSpace: const FlexibleSpaceBar(
               centerTitle: true,
               expandedTitleScale: 2.0,
@@ -205,7 +199,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Ligrá',
                 style: TextStyle(color: Colors.black),
               ),
-              // background: FlutterLogo(),
             ),
           ),
           SliverList(

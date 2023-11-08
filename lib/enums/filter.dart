@@ -1,10 +1,10 @@
 enum Filter {
-  all(apiValue: 'all', dropDownValue: 'Não filtrar'),
-  ebooks(apiValue: 'e-books', dropDownValue: 'E-book'),
-  freeEbooks(apiValue: 'free-ebooks', dropDownValue: 'E-book gratuito'),
   full(apiValue: 'full', dropDownValue: 'Gratuito'),
+  freeEbooks(apiValue: 'free-ebooks', dropDownValue: 'E-book gratuito'),
+  partial(apiValue: 'partial', dropDownValue: 'Acesso parcial'),
+  ebooks(apiValue: 'ebooks', dropDownValue: 'E-book'),
   paidEbooks(apiValue: 'paid-ebooks', dropDownValue: 'E-book pago'),
-  partial(apiValue: 'partial', dropDownValue: 'Acesso parcial');
+  all(apiValue: 'all', dropDownValue: 'Não filtrar');
 
   const Filter({
     required this.apiValue,
