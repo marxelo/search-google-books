@@ -205,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Ligrá',
                 style: GoogleFonts.prata(
                     textStyle: const TextStyle(
-                  color: Colors.black,
+                  color: Colors.black, fontSize: 32,
                 )),
               ),
               expandedTitleScale: 3.0,
@@ -236,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: GoogleFonts.prata(
                       textStyle: const TextStyle(
                         color: Colors.black54,
-                        fontSize: 18,
+                        fontSize: 24,
                       ),
                     ),
                   ),
@@ -249,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
               (BuildContext context, int index) {
                 if (index == books.length) {
                   return const SizedBox(
-                    height: 600,
+                    height: 50,
                     child: Center(
                       child: CircularProgressIndicator(),
                     ),
