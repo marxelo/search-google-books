@@ -327,17 +327,19 @@ class _BookDetailState extends State<BookDetail> {
                     minWidth: 300,
                     maxWidth: double.infinity,
                     maxHeight: double.infinity),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                ),
+                // decoration: BoxDecoration(
+                //   color: Theme.of(context).colorScheme.secondaryContainer,
+                //   borderRadius: const BorderRadius.all(
+                //     Radius.circular(20),
+                //   ),
+                // ),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      const SizedBox(height: kAboutBookSizedBoxHeight),
+                      
                       const Row(
                         children: [
                           Expanded(
@@ -353,6 +355,8 @@ class _BookDetailState extends State<BookDetail> {
                           ),
                         ],
                       ),
+                      
+                      const Divider(),
                       const SizedBox(height: kAboutBookSizedBoxHeight),
                       Row(
                         children: [
