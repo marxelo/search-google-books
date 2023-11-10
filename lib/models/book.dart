@@ -9,6 +9,14 @@ class Book {
     required this.accessInfo,
   });
 
+    Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'volumeInfo': volumeInfo.toJson(),
+      'accessInfo': accessInfo.toJson(),
+    };
+  }
+
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
       id: json['id'],
@@ -48,6 +56,18 @@ class VolumeInfo {
       required this.imageLinks,
       required this.publishedDate});
 
+        Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'subtitle': subtitle,
+      'authors': authors,
+      'description': description,
+      'pageCount': pageCount,
+      'imageLinks': imageLinks.toJson(),
+      'publishedDate': publishedDate,
+    };
+  }
+
   factory VolumeInfo.fromJson(Map<String, dynamic> json) {
     return VolumeInfo(
       title: json['title'] ?? 0,
@@ -72,6 +92,12 @@ class ImageLinks {
     required this.thumbnail,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'thumbnail': thumbnail,
+    };
+  }
+
   factory ImageLinks.fromJson(Map<String, dynamic> json) {
     return ImageLinks(
       thumbnail: json['thumbnail'] ??
@@ -94,6 +120,16 @@ class AccessInfo {
     required this.viewability,
     required this.accessViewStatus,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'epub': epub.toJson(),
+      'pdf': pdf.toJson(),
+      'webReaderLink': webReaderLink,
+      'viewability': viewability,
+      'accessViewStatus': accessViewStatus,
+    };
+  }
 
   factory AccessInfo.fromJson(Map<String, dynamic> json) {
     return AccessInfo(
@@ -120,6 +156,12 @@ class Epub {
 
   Epub({required this.downloadLink});
 
+    Map<String, dynamic> toJson() {
+    return {
+      'downloadLink': downloadLink,
+    };
+  }
+
   factory Epub.fromJson(Map<String, dynamic> json) {
     return Epub(
       downloadLink: json['downloadLink'],
@@ -131,6 +173,13 @@ class Pdf {
   String downloadLink;
 
   Pdf({required this.downloadLink});
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      'downloadLink': downloadLink,
+    };
+  }
 
   factory Pdf.fromJson(Map<String, dynamic> json) {
     return Pdf(

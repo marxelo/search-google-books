@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:gbooks/components/standard_cover_widget.dart';
 import 'package:gbooks/components/web_view_container.dart';
@@ -47,6 +49,7 @@ class _BookDetailState extends State<BookDetail> {
     final shelf = await DbHelper.getASingleBookByExternalId(externalId);
 
     if (shelf != null) {
+      debugPrint('==> ${bookFromShelf.bookData}');
       setState(() {
         bookFromShelf.id = shelf.id;
         bookFromShelf.ownership = shelf.ownership;
@@ -61,6 +64,7 @@ class _BookDetailState extends State<BookDetail> {
       bookFromShelf = Shelf(
         // id: 0,
         externalId: widget.book.id,
+        bookData: jsonEncode(widget.book.toJson()),
         readStatus: ReadStatus.notRead,
         ownership: Ownership.notOwned,
       );
@@ -84,7 +88,7 @@ class _BookDetailState extends State<BookDetail> {
   }
 
   Widget downloadViewWidget(String type) {
-    debugPrint('type: $type');
+    // debugPrint('type: $type');
     return Column(
       children: [
         const Icon(
@@ -99,7 +103,7 @@ class _BookDetailState extends State<BookDetail> {
   }
 
   Widget accessViewWidget(String viewability) {
-    debugPrint('viewability: $viewability');
+    // debugPrint('viewability: $viewability');
     return Column(
       children: [
         Icon(
@@ -176,8 +180,8 @@ class _BookDetailState extends State<BookDetail> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(book.accessInfo.toString());
-    debugPrint(' pdf link: ${book.accessInfo.pdf.downloadLink}');
+    // debugPrint(book.accessInfo.toString());
+    // debugPrint(' pdf link: ${book.accessInfo.pdf.downloadLink}');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes'),

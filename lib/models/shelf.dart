@@ -4,12 +4,14 @@ import 'package:gbooks/enums/read_status.dart';
 class Shelf {
   late int? id;
   String externalId;
+  String bookData;
   ReadStatus readStatus;
   Ownership ownership;
 
   Shelf({
     this.id,
     required this.externalId,
+    required this.bookData,
     required this.readStatus,
     required this.ownership,
   });
@@ -20,6 +22,7 @@ class Shelf {
     return {
       'id': id,
       'externalId': externalId,
+      'bookData': bookData,
       'readStatus': readStatus.index,
       'ownership': ownership.index,
     };
@@ -31,6 +34,7 @@ class Shelf {
     return Shelf(
       id: map['id'],
       externalId: map['externalId'],
+      bookData: map['bookData'],
       readStatus: ReadStatus.values[map['readStatus']],
       ownership: Ownership.values[map['ownership']],
     );

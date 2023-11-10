@@ -11,6 +11,7 @@ class DbHelper {
 
   static const columnId = 'id';
   static const columnExternalId = 'externalId';
+  static const collumnBookData = 'bookData';
   static const columnReadStatus = 'readStatus';
   static const columnOwnership = 'ownership';
 
@@ -39,6 +40,7 @@ class DbHelper {
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
             $columnExternalId TEXT NOT NULL,
+            $collumnBookData TEXT NOT NULL,
             $columnReadStatus INTEGER,
             $columnOwnership INTEGER
           )
