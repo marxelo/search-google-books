@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gbooks/components/standard_cover_widget.dart';
 import 'package:gbooks/components/web_view_container.dart';
-import 'package:gbooks/components/web_view_download.dart';
 import 'package:gbooks/enums/ownership.dart';
 import 'package:gbooks/enums/read_status.dart';
 import 'package:gbooks/models/book.dart';
 import 'package:gbooks/models/shelf.dart';
 import 'package:gbooks/utils/constants.dart';
 import 'package:gbooks/utils/dbhelper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookDetail extends StatefulWidget {
   const BookDetail({super.key, required this.book});
@@ -107,7 +107,7 @@ class _BookDetailState extends State<BookDetail> {
           color:
               viewability.contains('FULL') || viewability.contains('ALL_PAGES')
                   ? Colors.green
-                  : Colors.amberAccent,
+                  : Colors.yellow,
         ),
         const Text(
           'Ler',
@@ -158,6 +158,20 @@ class _BookDetailState extends State<BookDetail> {
               Text('Já Li')
             ],
           );
+  }
+
+  Future<void> _downloadEpub() async {
+    Uri uri = Uri.parse(book.accessInfo.epub.downloadLink);
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $uri');
+    }
+  }
+
+  Future<void> _downloadPdf() async {
+    Uri uri = Uri.parse(book.accessInfo.pdf.downloadLink);
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $uri');
+    }
   }
 
   @override
@@ -222,7 +236,6 @@ class _BookDetailState extends State<BookDetail> {
                         },
                         child: Container(
                           constraints: const BoxConstraints(
-                              // minHeight: 100,
                               minWidth: 60,
                               maxWidth: double.infinity,
                               maxHeight: double.infinity),
@@ -232,19 +245,9 @@ class _BookDetailState extends State<BookDetail> {
                       ),
                     if (book.accessInfo.epub.downloadLink.isNotEmpty)
                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WebViewDownload(
-                                url: book.accessInfo.epub.downloadLink,
-                              ),
-                            ),
-                          );
-                        },
+                        onTap: _downloadEpub,
                         child: Container(
                           constraints: const BoxConstraints(
-                              // minHeight: 100,
                               minWidth: 60,
                               maxWidth: double.infinity,
                               maxHeight: double.infinity),
@@ -253,19 +256,9 @@ class _BookDetailState extends State<BookDetail> {
                       ),
                     if (book.accessInfo.pdf.downloadLink.isNotEmpty)
                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WebViewDownload(
-                                url: book.accessInfo.pdf.downloadLink,
-                              ),
-                            ),
-                          );
-                        },
+                        onTap: _downloadPdf,
                         child: Container(
                           constraints: const BoxConstraints(
-                              // minHeight: 100,
                               minWidth: 60,
                               maxWidth: double.infinity,
                               maxHeight: double.infinity),
@@ -287,7 +280,6 @@ class _BookDetailState extends State<BookDetail> {
                       },
                       child: Container(
                         constraints: const BoxConstraints(
-                            // minHeight: 100,
                             minWidth: 60,
                             maxWidth: double.infinity,
                             maxHeight: double.infinity),
@@ -327,19 +319,12 @@ class _BookDetailState extends State<BookDetail> {
                     minWidth: 300,
                     maxWidth: double.infinity,
                     maxHeight: double.infinity),
-                // decoration: BoxDecoration(
-                //   color: Theme.of(context).colorScheme.secondaryContainer,
-                //   borderRadius: const BorderRadius.all(
-                //     Radius.circular(20),
-                //   ),
-                // ),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const SizedBox(height: kAboutBookSizedBoxHeight),
-                      
                       const Row(
                         children: [
                           Expanded(
@@ -355,7 +340,6 @@ class _BookDetailState extends State<BookDetail> {
                           ),
                         ],
                       ),
-                      
                       const Divider(),
                       const SizedBox(height: kAboutBookSizedBoxHeight),
                       Row(
@@ -416,7 +400,6 @@ class _BookDetailState extends State<BookDetail> {
                       const SizedBox(height: kAboutBookSizedBoxHeight),
                       Row(
                         children: [
-                          // const Text('E-mail: '),
                           const Icon(
                             Icons.notes_outlined,
                             color: kDetailsIconColor,
