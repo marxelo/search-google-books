@@ -25,14 +25,37 @@ class _BookDetailState extends State<BookDetail> {
 
   late Shelf bookFromShelf;
   bool bookAlreadyOnShelf = false;
-  // Shelf? shelf;
 
   void _saveBookInShelf(Shelf book) async {
     await DbHelper.insert(book);
+    setState(() {
+      _showSnackBar(context, 'Livro guardado na sua estante');
+    });
+    _fetchBookFromShelf(widget.book.id);
   }
 
   void _updateBookInShelf(Shelf book) async {
     await DbHelper.update(book);
+  }
+
+  void _delete(int id) async {
+    await DbHelper.delete(id);
+
+    setState(() {
+      _showSnackBar(context, 'Livro retirado da sua estante');
+      bookAlreadyOnShelf = false;
+      _initilizeBookFromShelf();
+    });
+  }
+
+  Future<void> _showSnackBar(BuildContext context, String message) async {
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
   }
 
   Future<void> _updateOrSaveBookInShelf(Shelf book) async {
@@ -49,7 +72,6 @@ class _BookDetailState extends State<BookDetail> {
     final shelf = await DbHelper.getASingleBookByExternalId(externalId);
 
     if (shelf != null) {
-      debugPrint('==> ${bookFromShelf.bookData}');
       setState(() {
         bookFromShelf.id = shelf.id;
         bookFromShelf.ownership = shelf.ownership;
@@ -87,80 +109,58 @@ class _BookDetailState extends State<BookDetail> {
     return authors.substring(0, authors.length - 1);
   }
 
-  Widget downloadViewWidget(String type) {
-    // debugPrint('type: $type');
+  Widget iconActionWidget(
+    IconData icon,
+    Color color,
+    String name,
+  ) {
     return Column(
       children: [
-        const Icon(
-          Icons.download_outlined,
-          color: Colors.blue,
+        Icon(
+          icon,
+          color: color,
         ),
         Text(
-          type,
+          name,
         ),
       ],
     );
   }
 
   Widget accessViewWidget(String viewability) {
-    // debugPrint('viewability: $viewability');
-    return Column(
-      children: [
-        Icon(
-          Icons.local_library_outlined,
-          color:
-              viewability.contains('FULL') || viewability.contains('ALL_PAGES')
-                  ? Colors.green
-                  : Colors.yellow,
-        ),
-        const Text(
-          'Ler',
-        ),
-      ],
-    );
+    return iconActionWidget(
+        Icons.local_library_outlined,
+        viewability.contains('FULL') || viewability.contains('ALL_PAGES')
+            ? Colors.green
+            : Colors.yellow,
+        'Ler');
   }
 
   Widget ownershipWidget(Shelf book) {
     return book.ownership.index == 0
-        ? const Column(
-            children: [
-              Icon(
-                Icons.bookmark_border_outlined,
-                color: Colors.red,
-              ),
-              Text('Não Tenho')
-            ],
+        ? iconActionWidget(
+            Icons.sell_outlined,
+            Colors.red,
+            'Não Tenho',
           )
-        : const Column(
-            children: [
-              Icon(
-                Icons.bookmark_added_outlined,
-                color: Colors.green,
-              ),
-              Text('Tenho')
-            ],
+        : iconActionWidget(
+            Icons.sell_outlined,
+            Colors.green,
+            'Tenho',
           );
   }
 
   Widget readStatusWidget(Shelf book) {
     return book.readStatus.index == 0
-        ? const Column(
-            children: [
-              Icon(
-                Icons.chrome_reader_mode_outlined,
-                color: Colors.red,
-              ),
-              Text('Não Li')
-            ],
+        ? iconActionWidget(
+            Icons.chrome_reader_mode_outlined,
+            Colors.red,
+            'Não li',
           )
-        : const Column(
-            children: [
-              Icon(
-                Icons.fact_check_outlined,
-                color: Colors.green,
-              ),
-              Text('Já Li')
-            ],
+        : iconActionWidget(
+            Icons.fact_check_outlined,
+            Colors.green,
+            'Já li',
           );
   }
 
@@ -180,12 +180,11 @@ class _BookDetailState extends State<BookDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint(book.accessInfo.toString());
-    // debugPrint(' pdf link: ${book.accessInfo.pdf.downloadLink}');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes'),
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -219,9 +218,8 @@ class _BookDetailState extends State<BookDetail> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(0.0, 20.0, 30.0, 0.0),
-              child: SizedBox(
-                width: 420,
+              padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
+              child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -255,7 +253,11 @@ class _BookDetailState extends State<BookDetail> {
                               minWidth: 60,
                               maxWidth: double.infinity,
                               maxHeight: double.infinity),
-                          child: downloadViewWidget('EPUB'),
+                          child: iconActionWidget(
+                            Icons.download_outlined,
+                            Colors.blue,
+                            'EPUB',
+                          ),
                         ),
                       ),
                     if (book.accessInfo.pdf.downloadLink.isNotEmpty)
@@ -266,10 +268,47 @@ class _BookDetailState extends State<BookDetail> {
                               minWidth: 60,
                               maxWidth: double.infinity,
                               maxHeight: double.infinity),
-                          child: downloadViewWidget('PDF'),
+                          child: iconActionWidget(
+                            Icons.download_outlined,
+                            Colors.blue,
+                            'PDF',
+                          ),
                         ),
                       ),
                     //
+                    !bookAlreadyOnShelf
+                        ? GestureDetector(
+                            onTap: () {
+                              _saveBookInShelf(bookFromShelf);
+                            },
+                            child: Container(
+                              constraints: const BoxConstraints(
+                                  minWidth: 60,
+                                  maxWidth: double.infinity,
+                                  maxHeight: double.infinity),
+                              child: iconActionWidget(
+                                Icons.shelves,
+                                Colors.blue,
+                                'Guardar',
+                              ),
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              _delete(bookFromShelf.id!);
+                            },
+                            child: Container(
+                              constraints: const BoxConstraints(
+                                  minWidth: 60,
+                                  maxWidth: double.infinity,
+                                  maxHeight: double.infinity),
+                              child: iconActionWidget(
+                                Icons.shelves,
+                                Colors.red,
+                                'Retirar',
+                              ),
+                            ),
+                          ),
                     GestureDetector(
                       onTap: () {
                         if (bookFromShelf.ownership == Ownership.owned) {

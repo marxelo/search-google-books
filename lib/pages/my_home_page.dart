@@ -4,6 +4,7 @@ import 'package:gbooks/components/search_bottom_sheet.dart';
 import 'package:gbooks/models/book.dart';
 import 'package:gbooks/models/books_response.dart';
 import 'package:gbooks/models/search.dart';
+import 'package:gbooks/pages/shelf_page.dart';
 import 'package:gbooks/services/google_books_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,6 +18,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int currentPageIndex = 0;
   final _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   final int maxResults = 20;
@@ -115,7 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
           _scrollController.position.maxScrollExtent) {
         search.startIndex += maxResults;
 
-        // _fetchData(search); // aki
         _fetchAndFilterBooks(search);
       }
     }
@@ -148,13 +149,17 @@ class _MyHomePageState extends State<MyHomePage> {
       books = [];
       _finalPage = false;
       _toastMessageSent = false;
-      // _fetchData(search); // aki
-      _fetchAndFilterBooks(search);
+      await _fetchAndFilterBooks(search);
+      if (books.isEmpty) {
+        setState(() {
+          _showSnackBar(context, 'Nenhum livro encontrado');
+        });
+      }
     }
 
     _searchController.text = "Marcelo";
 
-    Navigator.of(context).pop();
+      if (context.mounted)  Navigator.of(context).pop();
   }
 
   void showBottomSheet() async {
@@ -195,9 +200,22 @@ class _MyHomePageState extends State<MyHomePage> {
             surfaceTintColor: Colors.white,
             actions: [
               IconButton(
+                icon: const Icon(Icons.collections_bookmark_outlined),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ShelfPage(
+                        title: 'Shelf',
+                      ),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
                 onPressed: () => showBottomSheet(),
                 icon: const Icon(Icons.search_outlined),
-              )
+              ),
             ],
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(left: 10),
@@ -205,7 +223,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Ligrá',
                 style: GoogleFonts.prata(
                     textStyle: const TextStyle(
-                  color: Colors.black, fontSize: 32,
+                  color: Colors.black,
+                  fontSize: 32,
                 )),
               ),
               expandedTitleScale: 3.0,
